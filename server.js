@@ -1,39 +1,29 @@
 import express from "express";
-import jwt from "jsonwebtoken";
+import {
+  login,
+  authenticateToken,
+  fetchPost,
+  getToken,
+} from "./Authenticate.js";
+
 const app = express();
+const { PORT_ADD = 4000 } = process.env;
 
-app.use(express.json);
+app.use(express.json());
 
-const post = [
-  {
-    username: "akash",
-    title: "post1",
-  },
-  {
-    username: "arjun",
-    title: "post2",
-  },
-  {
-    username: "vishnu",
-    title: "post3",
-  },
-  {
-    username: "justin",
-    title: "post4",
-  },
-];
+app.get("/posts", authenticateToken, (req, res) => {
+  fetchPost(req, res);
+});
 
-app.get("/posts", (req, res) => {
-  console.log("testing");
+app.post("/token", (req, res) => {
+  getToken(req, res);
 });
 
 app.post("/login", (req, res) => {
-  // Authentication
-  const username = req.body.username;
-  const uesr = { name: username };
-
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRED);
-  res.json({ accessToken });
+  login(req, res);
 });
 
-app.listen(3000);
+app.listen(PORT_ADD, (err) => {
+  if (err) console.log("something went wrong ", err);
+  console.log(`port listening on ${PORT_ADD}`);
+});
